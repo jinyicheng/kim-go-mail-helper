@@ -9,10 +9,10 @@ import (
 )
 
 type Mail struct {
-	Configs []Config
+	Configs []MailConfig
 }
 
-type Config struct {
+type MailConfig struct {
 	Name        string              `json:"name"`
 	Host        string              `json:"host"`
 	Port        int                 `json:"port"`
@@ -20,36 +20,16 @@ type Config struct {
 	Password    string              `json:"password"`
 	Priority    *int                `json:"priority"`
 	Subject     *string             `json:"subject"`
-	Sender      *ConfigSender       `json:"sender"`
-	From        ConfigFrom          `json:"from"`
-	To          *[]ConfigTo         `json:"to"`
-	ReplyTo     *[]ConfigReplyTo    `json:"reply_to"`
-	Cc          *[]ConfigCc         `json:"cc"`
-	Bcc         *[]ConfigBcc        `json:"bcc"`
+	Sender      *MailContact        `json:"sender"`
+	From        MailContact         `json:"from"`
+	To          *[]MailContact      `json:"to"`
+	ReplyTo     *[]MailContact      `json:"reply_to"`
+	Cc          *[]MailContact      `json:"cc"`
+	Bcc         *[]MailContact      `json:"bcc"`
 	Body        *ConfigBody         `json:"body"`
 	Attachments *[]ConfigAttachment `json:"attachments"`
 }
-type ConfigSender struct {
-	Address string  `json:"address"`
-	Name    *string `json:"name"`
-}
-type ConfigFrom struct {
-	Address string  `json:"address"`
-	Name    *string `json:"name"`
-}
-type ConfigTo struct {
-	Address string  `json:"address"`
-	Name    *string `json:"name"`
-}
-type ConfigReplyTo struct {
-	Address string  `json:"address"`
-	Name    *string `json:"name"`
-}
-type ConfigCc struct {
-	Address string  `json:"address"`
-	Name    *string `json:"name"`
-}
-type ConfigBcc struct {
+type MailContact struct {
 	Address string  `json:"address"`
 	Name    *string `json:"name"`
 }
@@ -63,15 +43,15 @@ type ConfigAttachment struct {
 	IsEmbed bool    `json:"is_embed"`
 }
 
-func (m Mail) Get() map[string]Config {
-	configMap := make(map[string]Config, len(m.Configs))
+func (m Mail) Get() map[string]MailConfig {
+	configMap := make(map[string]MailConfig, len(m.Configs))
 	for _, config := range m.Configs {
 		configMap[config.Name] = config
 	}
 	return configMap
 }
 
-func (c Config) Send(message *Message) error {
+func (c MailConfig) Send(message *Message) error {
 	d := NewDialer(c.Host, c.Port, c.Username, c.Password)
 	d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
 	var m *Message
