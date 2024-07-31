@@ -3,6 +3,7 @@ package mailHelper
 import (
 	"crypto/tls"
 	"encoding/json"
+	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -28,6 +29,7 @@ type Mail struct {
 	Bcc         *[]MailContact    `json:"bcc"`
 	Body        *MailBody         `json:"body"`
 	Attachments *[]MailAttachment `json:"attachments"`
+	Env         string            `json:"env"`
 }
 type MailContact struct {
 	Address string  `json:"address"`
@@ -163,7 +165,9 @@ func (c Mail) Send(message *Message) error {
 			}
 		}
 	}
-	v, _ := json.Marshal(c)
-	print(string(v))
+	if c.Env == "debug" {
+		v, _ := json.Marshal(c)
+		log.Println(string(v))
+	}
 	return d.DialAndSend(m)
 }
