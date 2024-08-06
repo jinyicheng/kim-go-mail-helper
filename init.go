@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"log"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -78,7 +77,7 @@ func (c Mail) Send(message *Message) error {
 	}
 
 	//section To
-	if c.To != nil {
+	if c.To != nil && len(*c.To) > 0 {
 		var to []string
 		for _, item := range *c.To {
 			if item.Name != nil {
@@ -87,10 +86,10 @@ func (c Mail) Send(message *Message) error {
 				to = append(to, item.Address)
 			}
 		}
-		m.SetHeader("To", strings.Join(to, ","))
+		m.SetHeader("To", to...)
 	}
 	//section Reply To
-	if c.ReplyTo != nil {
+	if c.ReplyTo != nil && len(*c.ReplyTo) > 0 {
 		var replyTo []string
 		for _, item := range *c.ReplyTo {
 			if item.Name != nil {
@@ -99,10 +98,10 @@ func (c Mail) Send(message *Message) error {
 				replyTo = append(replyTo, item.Address)
 			}
 		}
-		m.SetHeader("Reply-To", strings.Join(replyTo, ","))
+		m.SetHeader("Reply-To", replyTo...)
 	}
 	//section Cc
-	if c.Cc != nil {
+	if c.Cc != nil && len(*c.Cc) > 0 {
 		var cc []string
 		for _, item := range *c.Cc {
 			if item.Name != nil {
@@ -111,10 +110,10 @@ func (c Mail) Send(message *Message) error {
 				cc = append(cc, item.Address)
 			}
 		}
-		m.SetHeader("Cc", strings.Join(cc, ","))
+		m.SetHeader("Cc", cc...)
 	}
 	//section Bcc
-	if c.Bcc != nil {
+	if c.Bcc != nil && len(*c.Bcc) > 0 {
 		var bcc []string
 		for _, item := range *c.Bcc {
 			if item.Name != nil {
@@ -123,7 +122,7 @@ func (c Mail) Send(message *Message) error {
 				bcc = append(bcc, item.Address)
 			}
 		}
-		m.SetHeader("Bcc", strings.Join(bcc, ","))
+		m.SetHeader("Bcc", bcc...)
 	}
 	// section X-Date
 	now := time.Now()
