@@ -22,12 +22,12 @@ type Mail struct {
 	Subject     *string           `json:"subject"`
 	Sender      *MailContact      `json:"sender"`
 	From        MailContact       `json:"from"`
-	To          *[]MailContact    `json:"to"`
-	ReplyTo     *[]MailContact    `json:"reply_to"`
-	Cc          *[]MailContact    `json:"cc"`
-	Bcc         *[]MailContact    `json:"bcc"`
+	To          []*MailContact    `json:"to"`
+	ReplyTo     []*MailContact    `json:"reply_to"`
+	Cc          []*MailContact    `json:"cc"`
+	Bcc         []*MailContact    `json:"bcc"`
 	Body        *MailBody         `json:"body"`
-	Attachments *[]MailAttachment `json:"attachments"`
+	Attachments []*MailAttachment `json:"attachments"`
 	Env         string            `json:"env"`
 }
 type MailContact struct {
@@ -77,9 +77,9 @@ func (c Mail) Send(message *Message) error {
 	}
 
 	//section To
-	if c.To != nil && len(*c.To) > 0 {
+	if len(c.To) > 0 {
 		var to []string
-		for _, item := range *c.To {
+		for _, item := range c.To {
 			if item.Name != nil {
 				to = append(to, m.FormatAddress(item.Address, *item.Name))
 			} else {
@@ -89,9 +89,9 @@ func (c Mail) Send(message *Message) error {
 		m.SetHeader("To", to...)
 	}
 	//section Reply To
-	if c.ReplyTo != nil && len(*c.ReplyTo) > 0 {
+	if len(c.ReplyTo) > 0 {
 		var replyTo []string
-		for _, item := range *c.ReplyTo {
+		for _, item := range c.ReplyTo {
 			if item.Name != nil {
 				replyTo = append(replyTo, m.FormatAddress(item.Address, *item.Name))
 			} else {
@@ -101,9 +101,9 @@ func (c Mail) Send(message *Message) error {
 		m.SetHeader("Reply-To", replyTo...)
 	}
 	//section Cc
-	if c.Cc != nil && len(*c.Cc) > 0 {
+	if len(c.Cc) > 0 {
 		var cc []string
-		for _, item := range *c.Cc {
+		for _, item := range c.Cc {
 			if item.Name != nil {
 				cc = append(cc, m.FormatAddress(item.Address, *item.Name))
 			} else {
@@ -113,9 +113,9 @@ func (c Mail) Send(message *Message) error {
 		m.SetHeader("Cc", cc...)
 	}
 	//section Bcc
-	if c.Bcc != nil && len(*c.Bcc) > 0 {
+	if len(c.Bcc) > 0 {
 		var bcc []string
-		for _, item := range *c.Bcc {
+		for _, item := range c.Bcc {
 			if item.Name != nil {
 				bcc = append(bcc, m.FormatAddress(item.Address, *item.Name))
 			} else {
@@ -146,8 +146,8 @@ func (c Mail) Send(message *Message) error {
 
 	}
 	// section Attachment
-	if c.Attachments != nil {
-		for _, attachment := range *c.Attachments {
+	if len(c.Attachments) > 0 {
+		for _, attachment := range c.Attachments {
 			if attachment.Name != nil {
 				if attachment.IsEmbed {
 					m.Embed(attachment.Path, Rename(*attachment.Name))
